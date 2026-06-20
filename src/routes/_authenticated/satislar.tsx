@@ -21,6 +21,7 @@ export const Route = createFileRoute("/_authenticated/satislar")({
 const fmt = (n: number) => new Intl.NumberFormat("tr-TR", { style: "currency", currency: "TRY" }).format(n);
 
 type Line = { part_id: string; name: string; sku: string; qty: number; unit_price: number };
+type PaymentType = "nakit" | "kart" | "veresiye";
 
 function SatislarPage() {
   const qc = useQueryClient();
@@ -30,6 +31,10 @@ function SatislarPage() {
   const [notes, setNotes] = useState("");
   const [lines, setLines] = useState<Line[]>([]);
   const [partSearch, setPartSearch] = useState("");
+  const [discount, setDiscount] = useState<string>("0");
+  const [paymentType, setPaymentType] = useState<PaymentType>("nakit");
+  const [paidAmount, setPaidAmount] = useState<string>("");
+
 
   const { data: sales = [] } = useQuery({
     queryKey: ["sales"],
