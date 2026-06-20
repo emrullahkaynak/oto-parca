@@ -23,9 +23,17 @@ type PartForm = {
   id?: string;
   sku: string; name: string; brand: string; category: string;
   shelf_location: string; price: string; cost: string; stock: string; min_stock: string;
+  oem_code: string; barcode: string;
+  vehicle_make: string; vehicle_model: string; vehicle_year_from: string; vehicle_year_to: string;
 };
 
-const empty: PartForm = { sku: "", name: "", brand: "", category: "", shelf_location: "", price: "0", cost: "0", stock: "0", min_stock: "0" };
+const empty: PartForm = {
+  sku: "", name: "", brand: "", category: "", shelf_location: "",
+  price: "0", cost: "0", stock: "0", min_stock: "0",
+  oem_code: "", barcode: "",
+  vehicle_make: "", vehicle_model: "", vehicle_year_from: "", vehicle_year_to: "",
+};
+
 
 function StokPage() {
   const qc = useQueryClient();
