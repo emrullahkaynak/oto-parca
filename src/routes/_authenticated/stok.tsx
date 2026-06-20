@@ -23,9 +23,17 @@ type PartForm = {
   id?: string;
   sku: string; name: string; brand: string; category: string;
   shelf_location: string; price: string; cost: string; stock: string; min_stock: string;
+  oem_code: string; barcode: string;
+  vehicle_make: string; vehicle_model: string; vehicle_year_from: string; vehicle_year_to: string;
 };
 
-const empty: PartForm = { sku: "", name: "", brand: "", category: "", shelf_location: "", price: "0", cost: "0", stock: "0", min_stock: "0" };
+const empty: PartForm = {
+  sku: "", name: "", brand: "", category: "", shelf_location: "",
+  price: "0", cost: "0", stock: "0", min_stock: "0",
+  oem_code: "", barcode: "",
+  vehicle_make: "", vehicle_model: "", vehicle_year_from: "", vehicle_year_to: "",
+};
+
 
 function StokPage() {
   const qc = useQueryClient();
@@ -51,6 +59,12 @@ function StokPage() {
         shelf_location: form.shelf_location || null,
         price: Number(form.price) || 0, cost: Number(form.cost) || 0,
         stock: Number(form.stock) || 0, min_stock: Number(form.min_stock) || 0,
+        oem_code: form.oem_code || null,
+        barcode: form.barcode || null,
+        vehicle_make: form.vehicle_make || null,
+        vehicle_model: form.vehicle_model || null,
+        vehicle_year_from: form.vehicle_year_from ? Number(form.vehicle_year_from) : null,
+        vehicle_year_to: form.vehicle_year_to ? Number(form.vehicle_year_to) : null,
       };
       if (form.id) {
         const { error } = await supabase.from("parts").update(payload).eq("id", form.id);
@@ -73,6 +87,10 @@ function StokPage() {
       id: p.id, sku: p.sku, name: p.name, brand: p.brand || "", category: p.category || "",
       shelf_location: p.shelf_location || "", price: String(p.price), cost: String(p.cost),
       stock: String(p.stock), min_stock: String(p.min_stock),
+      oem_code: p.oem_code || "", barcode: p.barcode || "",
+      vehicle_make: p.vehicle_make || "", vehicle_model: p.vehicle_model || "",
+      vehicle_year_from: p.vehicle_year_from ? String(p.vehicle_year_from) : "",
+      vehicle_year_to: p.vehicle_year_to ? String(p.vehicle_year_to) : "",
     });
     setOpen(true);
   };
@@ -83,13 +101,15 @@ function StokPage() {
         <DialogTrigger asChild>
           <Button><Plus className="size-4 mr-1" /> Yeni Parça</Button>
         </DialogTrigger>
-        <DialogContent className="max-w-2xl">
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>{form.id ? "Parçayı Düzenle" : "Yeni Parça Ekle"}</DialogTitle>
           </DialogHeader>
           <form onSubmit={(e) => { e.preventDefault(); save.mutate(); }} className="grid grid-cols-2 gap-4">
             <Field label="SKU *"><Input required value={form.sku} onChange={(e) => setForm({ ...form, sku: e.target.value })} /></Field>
             <Field label="Ürün Adı *"><Input required value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} /></Field>
+            <Field label="OEM Kodu"><Input value={form.oem_code} onChange={(e) => setForm({ ...form, oem_code: e.target.value })} /></Field>
+            <Field label="Barkod"><Input value={form.barcode} onChange={(e) => setForm({ ...form, barcode: e.target.value })} /></Field>
             <Field label="Marka"><Input value={form.brand} onChange={(e) => setForm({ ...form, brand: e.target.value })} /></Field>
             <Field label="Kategori"><Input value={form.category} onChange={(e) => setForm({ ...form, category: e.target.value })} /></Field>
             <Field label="Raf Konumu"><Input value={form.shelf_location} onChange={(e) => setForm({ ...form, shelf_location: e.target.value })} /></Field>
@@ -97,6 +117,15 @@ function StokPage() {
             <Field label="Alış Maliyeti (₺)"><Input type="number" step="0.01" value={form.cost} onChange={(e) => setForm({ ...form, cost: e.target.value })} /></Field>
             <Field label="Stok Miktarı"><Input type="number" value={form.stock} onChange={(e) => setForm({ ...form, stock: e.target.value })} /></Field>
             <Field label="Min. Stok"><Input type="number" value={form.min_stock} onChange={(e) => setForm({ ...form, min_stock: e.target.value })} /></Field>
+            <div className="col-span-2 pt-2 border-t">
+              <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-3">Araç Uyumluluğu</p>
+              <div className="grid grid-cols-2 gap-4">
+                <Field label="Araç Markası"><Input value={form.vehicle_make} onChange={(e) => setForm({ ...form, vehicle_make: e.target.value })} placeholder="örn. Ford" /></Field>
+                <Field label="Model"><Input value={form.vehicle_model} onChange={(e) => setForm({ ...form, vehicle_model: e.target.value })} placeholder="örn. Transit" /></Field>
+                <Field label="Yıl (Başlangıç)"><Input type="number" value={form.vehicle_year_from} onChange={(e) => setForm({ ...form, vehicle_year_from: e.target.value })} placeholder="2014" /></Field>
+                <Field label="Yıl (Bitiş)"><Input type="number" value={form.vehicle_year_to} onChange={(e) => setForm({ ...form, vehicle_year_to: e.target.value })} placeholder="2020" /></Field>
+              </div>
+            </div>
             <DialogFooter className="col-span-2">
               <Button type="submit" disabled={save.isPending}>{save.isPending ? "Kaydediliyor..." : "Kaydet"}</Button>
             </DialogFooter>
@@ -104,6 +133,7 @@ function StokPage() {
         </DialogContent>
       </Dialog>
     }>
+
       <div className="space-y-4">
         <div className="relative max-w-md">
           <Search className="absolute left-3 top-2.5 size-4 text-muted-foreground" />

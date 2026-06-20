@@ -21,6 +21,7 @@ export const Route = createFileRoute("/_authenticated/satislar")({
 const fmt = (n: number) => new Intl.NumberFormat("tr-TR", { style: "currency", currency: "TRY" }).format(n);
 
 type Line = { part_id: string; name: string; sku: string; qty: number; unit_price: number };
+type PaymentType = "nakit" | "kart" | "veresiye";
 
 function SatislarPage() {
   const qc = useQueryClient();
@@ -30,6 +31,10 @@ function SatislarPage() {
   const [notes, setNotes] = useState("");
   const [lines, setLines] = useState<Line[]>([]);
   const [partSearch, setPartSearch] = useState("");
+  const [discount, setDiscount] = useState<string>("0");
+  const [paymentType, setPaymentType] = useState<PaymentType>("nakit");
+  const [paidAmount, setPaidAmount] = useState<string>("");
+
 
   const { data: sales = [] } = useQuery({
     queryKey: ["sales"],
@@ -68,7 +73,13 @@ function SatislarPage() {
     },
   });
 
-  const total = lines.reduce((s, l) => s + l.qty * l.unit_price, 0);
+  const subtotal = lines.reduce((s, l) => s + l.qty * l.unit_price, 0);
+  const discountNum = Math.max(0, Number(discount) || 0);
+  const total = Math.max(0, subtotal - discountNum);
+  const paidNum = paymentType === "veresiye"
+    ? Math.max(0, Number(paidAmount) || 0)
+    : total;
+  const outstanding = Math.max(0, total - paidNum);
 
   const addLine = (p: any) => {
     setLines((prev) => {
@@ -84,11 +95,15 @@ function SatislarPage() {
   const create = useMutation({
     mutationFn: async () => {
       if (lines.length === 0) throw new Error("En az bir parça ekleyin");
+      if (paymentType === "veresiye" && !customerId) throw new Error("Veresiye satış için müşteri seçin");
       const { data: sale, error } = await supabase
         .from("sales").insert({
           customer_id: customerId || null,
           vehicle_id: vehicleId || null,
           total,
+          discount: discountNum,
+          payment_type: paymentType,
+          paid_amount: paidNum,
           notes: notes || null,
           status: "tamamlandi",
         }).select().single();
@@ -98,14 +113,17 @@ function SatislarPage() {
       if (e2) throw e2;
     },
     onSuccess: () => {
-      toast.success("Satış kaydedildi");
+      toast.success(outstanding > 0 ? `Satış kaydedildi. Veresiye: ${fmt(outstanding)}` : "Satış kaydedildi");
       qc.invalidateQueries({ queryKey: ["sales"] });
       qc.invalidateQueries({ queryKey: ["dashboard"] });
       qc.invalidateQueries({ queryKey: ["parts"] });
+      qc.invalidateQueries({ queryKey: ["customers"] });
       setOpen(false); setLines([]); setCustomerId(""); setVehicleId(""); setNotes("");
+      setDiscount("0"); setPaymentType("nakit"); setPaidAmount("");
     },
     onError: (e: any) => toast.error(e.message),
   });
+
 
   return (
     <AppShell title="Satışlar" action={
@@ -113,7 +131,7 @@ function SatislarPage() {
         <DialogTrigger asChild>
           <Button><Plus className="size-4 mr-1" /> Yeni Satış</Button>
         </DialogTrigger>
-        <DialogContent className="max-w-3xl">
+        <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
           <DialogHeader><DialogTitle>Yeni Satış Oluştur</DialogTitle></DialogHeader>
           <div className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
@@ -175,10 +193,47 @@ function SatislarPage() {
 
             <Textarea placeholder="Notlar..." value={notes} onChange={(e) => setNotes(e.target.value)} />
 
-            <div className="flex items-center justify-between pt-2 border-t">
-              <span className="text-sm text-muted-foreground">Toplam</span>
-              <span className="text-2xl font-bold">{fmt(total)}</span>
+            <div className="grid grid-cols-3 gap-4 pt-2 border-t">
+              <div className="space-y-2">
+                <Label>İndirim (₺)</Label>
+                <Input type="number" step="0.01" min="0" value={discount} onChange={(e) => setDiscount(e.target.value)} />
+              </div>
+              <div className="space-y-2">
+                <Label>Ödeme Tipi</Label>
+                <select className="w-full border border-input rounded-md h-10 px-3 bg-background text-sm"
+                  value={paymentType} onChange={(e) => setPaymentType(e.target.value as PaymentType)}>
+                  <option value="nakit">Nakit</option>
+                  <option value="kart">Kredi Kartı</option>
+                  <option value="veresiye">Veresiye</option>
+                </select>
+              </div>
+              {paymentType === "veresiye" && (
+                <div className="space-y-2">
+                  <Label>Peşin Ödenen (₺)</Label>
+                  <Input type="number" step="0.01" min="0" placeholder="0" value={paidAmount} onChange={(e) => setPaidAmount(e.target.value)} />
+                </div>
+              )}
             </div>
+
+            <div className="space-y-1.5 pt-2 border-t">
+              <div className="flex justify-between text-sm text-muted-foreground">
+                <span>Ara Toplam</span><span>{fmt(subtotal)}</span>
+              </div>
+              {discountNum > 0 && (
+                <div className="flex justify-between text-sm text-destructive">
+                  <span>İndirim</span><span>−{fmt(discountNum)}</span>
+                </div>
+              )}
+              <div className="flex justify-between text-lg font-bold">
+                <span>Genel Toplam</span><span>{fmt(total)}</span>
+              </div>
+              {paymentType === "veresiye" && outstanding > 0 && (
+                <div className="flex justify-between text-sm font-semibold text-amber-700 bg-amber-50 px-3 py-2 rounded">
+                  <span>Veresiye Bakiye</span><span>{fmt(outstanding)}</span>
+                </div>
+              )}
+            </div>
+
 
             <DialogFooter>
               <Button onClick={() => create.mutate()} disabled={create.isPending || lines.length === 0}>

@@ -12,12 +12,14 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AuthenticatedTerminalRouteImport } from './routes/_authenticated/terminal'
 import { Route as AuthenticatedTedarikcilerRouteImport } from './routes/_authenticated/tedarikciler'
 import { Route as AuthenticatedStokRouteImport } from './routes/_authenticated/stok'
 import { Route as AuthenticatedSatislarRouteImport } from './routes/_authenticated/satislar'
 import { Route as AuthenticatedRaporlarRouteImport } from './routes/_authenticated/raporlar'
 import { Route as AuthenticatedPanelRouteImport } from './routes/_authenticated/panel'
 import { Route as AuthenticatedMusterilerRouteImport } from './routes/_authenticated/musteriler'
+import { Route as AuthenticatedBarkodRouteImport } from './routes/_authenticated/barkod'
 
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
@@ -32,6 +34,11 @@ const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedTerminalRoute = AuthenticatedTerminalRouteImport.update({
+  id: '/terminal',
+  path: '/terminal',
+  getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedTedarikcilerRoute =
   AuthenticatedTedarikcilerRouteImport.update({
@@ -64,71 +71,88 @@ const AuthenticatedMusterilerRoute = AuthenticatedMusterilerRouteImport.update({
   path: '/musteriler',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedBarkodRoute = AuthenticatedBarkodRouteImport.update({
+  id: '/barkod',
+  path: '/barkod',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/barkod': typeof AuthenticatedBarkodRoute
   '/musteriler': typeof AuthenticatedMusterilerRoute
   '/panel': typeof AuthenticatedPanelRoute
   '/raporlar': typeof AuthenticatedRaporlarRoute
   '/satislar': typeof AuthenticatedSatislarRoute
   '/stok': typeof AuthenticatedStokRoute
   '/tedarikciler': typeof AuthenticatedTedarikcilerRoute
+  '/terminal': typeof AuthenticatedTerminalRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/barkod': typeof AuthenticatedBarkodRoute
   '/musteriler': typeof AuthenticatedMusterilerRoute
   '/panel': typeof AuthenticatedPanelRoute
   '/raporlar': typeof AuthenticatedRaporlarRoute
   '/satislar': typeof AuthenticatedSatislarRoute
   '/stok': typeof AuthenticatedStokRoute
   '/tedarikciler': typeof AuthenticatedTedarikcilerRoute
+  '/terminal': typeof AuthenticatedTerminalRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
+  '/_authenticated/barkod': typeof AuthenticatedBarkodRoute
   '/_authenticated/musteriler': typeof AuthenticatedMusterilerRoute
   '/_authenticated/panel': typeof AuthenticatedPanelRoute
   '/_authenticated/raporlar': typeof AuthenticatedRaporlarRoute
   '/_authenticated/satislar': typeof AuthenticatedSatislarRoute
   '/_authenticated/stok': typeof AuthenticatedStokRoute
   '/_authenticated/tedarikciler': typeof AuthenticatedTedarikcilerRoute
+  '/_authenticated/terminal': typeof AuthenticatedTerminalRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
     | '/auth'
+    | '/barkod'
     | '/musteriler'
     | '/panel'
     | '/raporlar'
     | '/satislar'
     | '/stok'
     | '/tedarikciler'
+    | '/terminal'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/auth'
+    | '/barkod'
     | '/musteriler'
     | '/panel'
     | '/raporlar'
     | '/satislar'
     | '/stok'
     | '/tedarikciler'
+    | '/terminal'
   id:
     | '__root__'
     | '/'
     | '/_authenticated'
     | '/auth'
+    | '/_authenticated/barkod'
     | '/_authenticated/musteriler'
     | '/_authenticated/panel'
     | '/_authenticated/raporlar'
     | '/_authenticated/satislar'
     | '/_authenticated/stok'
     | '/_authenticated/tedarikciler'
+    | '/_authenticated/terminal'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -159,6 +183,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/terminal': {
+      id: '/_authenticated/terminal'
+      path: '/terminal'
+      fullPath: '/terminal'
+      preLoaderRoute: typeof AuthenticatedTerminalRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/tedarikciler': {
       id: '/_authenticated/tedarikciler'
@@ -202,25 +233,36 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedMusterilerRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/barkod': {
+      id: '/_authenticated/barkod'
+      path: '/barkod'
+      fullPath: '/barkod'
+      preLoaderRoute: typeof AuthenticatedBarkodRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
   }
 }
 
 interface AuthenticatedRouteRouteChildren {
+  AuthenticatedBarkodRoute: typeof AuthenticatedBarkodRoute
   AuthenticatedMusterilerRoute: typeof AuthenticatedMusterilerRoute
   AuthenticatedPanelRoute: typeof AuthenticatedPanelRoute
   AuthenticatedRaporlarRoute: typeof AuthenticatedRaporlarRoute
   AuthenticatedSatislarRoute: typeof AuthenticatedSatislarRoute
   AuthenticatedStokRoute: typeof AuthenticatedStokRoute
   AuthenticatedTedarikcilerRoute: typeof AuthenticatedTedarikcilerRoute
+  AuthenticatedTerminalRoute: typeof AuthenticatedTerminalRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedBarkodRoute: AuthenticatedBarkodRoute,
   AuthenticatedMusterilerRoute: AuthenticatedMusterilerRoute,
   AuthenticatedPanelRoute: AuthenticatedPanelRoute,
   AuthenticatedRaporlarRoute: AuthenticatedRaporlarRoute,
   AuthenticatedSatislarRoute: AuthenticatedSatislarRoute,
   AuthenticatedStokRoute: AuthenticatedStokRoute,
   AuthenticatedTedarikcilerRoute: AuthenticatedTedarikcilerRoute,
+  AuthenticatedTerminalRoute: AuthenticatedTerminalRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =

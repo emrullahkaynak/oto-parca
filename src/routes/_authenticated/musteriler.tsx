@@ -91,13 +91,14 @@ function MusterilerPage() {
               <th className="px-6 py-4">Müşteri</th>
               <th className="px-6 py-4">Telefon</th>
               <th className="px-6 py-4">E-posta</th>
-              <th className="px-6 py-4">Araç Sayısı</th>
+              <th className="px-6 py-4">Araç</th>
+              <th className="px-6 py-4 text-right">Bakiye (Veresiye)</th>
               <th className="px-6 py-4"></th>
             </tr>
           </thead>
           <tbody className="divide-y divide-border">
             {customers.length === 0 && (
-              <tr><td colSpan={6} className="px-6 py-12 text-center text-sm text-muted-foreground">Henüz müşteri yok.</td></tr>
+              <tr><td colSpan={7} className="px-6 py-12 text-center text-sm text-muted-foreground">Henüz müşteri yok.</td></tr>
             )}
             {customers.map((c: any) => (
               <>
@@ -111,15 +112,19 @@ function MusterilerPage() {
                   <td className="px-6 py-4 text-sm text-muted-foreground">{c.phone || "—"}</td>
                   <td className="px-6 py-4 text-sm text-muted-foreground">{c.email || "—"}</td>
                   <td className="px-6 py-4 text-sm">{c.vehicles?.length || 0}</td>
+                  <td className={`px-6 py-4 text-right font-mono font-semibold ${Number(c.balance) > 0 ? "text-destructive" : "text-muted-foreground"}`}>
+                    {new Intl.NumberFormat("tr-TR", { style: "currency", currency: "TRY" }).format(Number(c.balance) || 0)}
+                  </td>
                   <td className="px-6 py-4 text-right">
                     <Button size="sm" variant="outline" onClick={() => { setVehForm({ ...vehForm, customer_id: c.id }); setVehOpen(true); }}>
                       <Car className="size-3 mr-1" /> Araç Ekle
                     </Button>
                   </td>
                 </tr>
+
                 {expanded === c.id && (
                   <tr key={c.id + "-v"} className="bg-muted/30">
-                    <td colSpan={6} className="px-6 py-4">
+                    <td colSpan={7} className="px-6 py-4">
                       {c.vehicles?.length === 0 ? (
                         <p className="text-sm text-muted-foreground">Bu müşterinin kayıtlı aracı yok.</p>
                       ) : (
