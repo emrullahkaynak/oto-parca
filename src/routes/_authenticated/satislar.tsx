@@ -73,7 +73,13 @@ function SatislarPage() {
     },
   });
 
-  const total = lines.reduce((s, l) => s + l.qty * l.unit_price, 0);
+  const subtotal = lines.reduce((s, l) => s + l.qty * l.unit_price, 0);
+  const discountNum = Math.max(0, Number(discount) || 0);
+  const total = Math.max(0, subtotal - discountNum);
+  const paidNum = paymentType === "veresiye"
+    ? Math.max(0, Number(paidAmount) || 0)
+    : total;
+  const outstanding = Math.max(0, total - paidNum);
 
   const addLine = (p: any) => {
     setLines((prev) => {
@@ -89,11 +95,15 @@ function SatislarPage() {
   const create = useMutation({
     mutationFn: async () => {
       if (lines.length === 0) throw new Error("En az bir parça ekleyin");
+      if (paymentType === "veresiye" && !customerId) throw new Error("Veresiye satış için müşteri seçin");
       const { data: sale, error } = await supabase
         .from("sales").insert({
           customer_id: customerId || null,
           vehicle_id: vehicleId || null,
           total,
+          discount: discountNum,
+          payment_type: paymentType,
+          paid_amount: paidNum,
           notes: notes || null,
           status: "tamamlandi",
         }).select().single();
@@ -103,14 +113,17 @@ function SatislarPage() {
       if (e2) throw e2;
     },
     onSuccess: () => {
-      toast.success("Satış kaydedildi");
+      toast.success(outstanding > 0 ? `Satış kaydedildi. Veresiye: ${fmt(outstanding)}` : "Satış kaydedildi");
       qc.invalidateQueries({ queryKey: ["sales"] });
       qc.invalidateQueries({ queryKey: ["dashboard"] });
       qc.invalidateQueries({ queryKey: ["parts"] });
+      qc.invalidateQueries({ queryKey: ["customers"] });
       setOpen(false); setLines([]); setCustomerId(""); setVehicleId(""); setNotes("");
+      setDiscount("0"); setPaymentType("nakit"); setPaidAmount("");
     },
     onError: (e: any) => toast.error(e.message),
   });
+
 
   return (
     <AppShell title="Satışlar" action={
