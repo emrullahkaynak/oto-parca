@@ -14,9 +14,58 @@ export type Database = {
   }
   public: {
     Tables: {
+      customer_transactions: {
+        Row: {
+          amount: number
+          created_at: string
+          created_by: string | null
+          customer_id: string
+          id: string
+          notes: string | null
+          sale_id: string | null
+          type: string
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          created_by?: string | null
+          customer_id: string
+          id?: string
+          notes?: string | null
+          sale_id?: string | null
+          type: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          created_by?: string | null
+          customer_id?: string
+          id?: string
+          notes?: string | null
+          sale_id?: string | null
+          type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "customer_transactions_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "customer_transactions_sale_id_fkey"
+            columns: ["sale_id"]
+            isOneToOne: false
+            referencedRelation: "sales"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       customers: {
         Row: {
           address: string | null
+          balance: number
           created_at: string
           email: string | null
           full_name: string
@@ -27,6 +76,7 @@ export type Database = {
         }
         Insert: {
           address?: string | null
+          balance?: number
           created_at?: string
           email?: string | null
           full_name: string
@@ -37,6 +87,7 @@ export type Database = {
         }
         Update: {
           address?: string | null
+          balance?: number
           created_at?: string
           email?: string | null
           full_name?: string
@@ -49,6 +100,7 @@ export type Database = {
       }
       parts: {
         Row: {
+          barcode: string | null
           brand: string | null
           category: string | null
           cost: number
@@ -57,14 +109,20 @@ export type Database = {
           id: string
           min_stock: number
           name: string
+          oem_code: string | null
           price: number
           shelf_location: string | null
           sku: string
           stock: number
           supplier_id: string | null
           updated_at: string
+          vehicle_make: string | null
+          vehicle_model: string | null
+          vehicle_year_from: number | null
+          vehicle_year_to: number | null
         }
         Insert: {
+          barcode?: string | null
           brand?: string | null
           category?: string | null
           cost?: number
@@ -73,14 +131,20 @@ export type Database = {
           id?: string
           min_stock?: number
           name: string
+          oem_code?: string | null
           price?: number
           shelf_location?: string | null
           sku: string
           stock?: number
           supplier_id?: string | null
           updated_at?: string
+          vehicle_make?: string | null
+          vehicle_model?: string | null
+          vehicle_year_from?: number | null
+          vehicle_year_to?: number | null
         }
         Update: {
+          barcode?: string | null
           brand?: string | null
           category?: string | null
           cost?: number
@@ -89,12 +153,17 @@ export type Database = {
           id?: string
           min_stock?: number
           name?: string
+          oem_code?: string | null
           price?: number
           shelf_location?: string | null
           sku?: string
           stock?: number
           supplier_id?: string | null
           updated_at?: string
+          vehicle_make?: string | null
+          vehicle_model?: string | null
+          vehicle_year_from?: number | null
+          vehicle_year_to?: number | null
         }
         Relationships: [
           {
@@ -257,8 +326,11 @@ export type Database = {
           created_at: string
           created_by: string | null
           customer_id: string | null
+          discount: number
           id: string
           notes: string | null
+          paid_amount: number
+          payment_type: string
           sale_no: number
           status: string
           total: number
@@ -269,8 +341,11 @@ export type Database = {
           created_at?: string
           created_by?: string | null
           customer_id?: string | null
+          discount?: number
           id?: string
           notes?: string | null
+          paid_amount?: number
+          payment_type?: string
           sale_no?: number
           status?: string
           total?: number
@@ -281,8 +356,11 @@ export type Database = {
           created_at?: string
           created_by?: string | null
           customer_id?: string | null
+          discount?: number
           id?: string
           notes?: string | null
+          paid_amount?: number
+          payment_type?: string
           sale_no?: number
           status?: string
           total?: number
