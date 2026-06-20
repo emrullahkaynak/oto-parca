@@ -9,38 +9,150 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as AuthRouteImport } from './routes/auth'
+import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AuthenticatedTedarikcilerRouteImport } from './routes/_authenticated/tedarikciler'
+import { Route as AuthenticatedStokRouteImport } from './routes/_authenticated/stok'
+import { Route as AuthenticatedSatislarRouteImport } from './routes/_authenticated/satislar'
+import { Route as AuthenticatedRaporlarRouteImport } from './routes/_authenticated/raporlar'
+import { Route as AuthenticatedPanelRouteImport } from './routes/_authenticated/panel'
+import { Route as AuthenticatedMusterilerRouteImport } from './routes/_authenticated/musteriler'
 
+const AuthRoute = AuthRouteImport.update({
+  id: '/auth',
+  path: '/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
+  id: '/_authenticated',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedTedarikcilerRoute =
+  AuthenticatedTedarikcilerRouteImport.update({
+    id: '/tedarikciler',
+    path: '/tedarikciler',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedStokRoute = AuthenticatedStokRouteImport.update({
+  id: '/stok',
+  path: '/stok',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedSatislarRoute = AuthenticatedSatislarRouteImport.update({
+  id: '/satislar',
+  path: '/satislar',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedRaporlarRoute = AuthenticatedRaporlarRouteImport.update({
+  id: '/raporlar',
+  path: '/raporlar',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedPanelRoute = AuthenticatedPanelRouteImport.update({
+  id: '/panel',
+  path: '/panel',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedMusterilerRoute = AuthenticatedMusterilerRouteImport.update({
+  id: '/musteriler',
+  path: '/musteriler',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/auth': typeof AuthRoute
+  '/musteriler': typeof AuthenticatedMusterilerRoute
+  '/panel': typeof AuthenticatedPanelRoute
+  '/raporlar': typeof AuthenticatedRaporlarRoute
+  '/satislar': typeof AuthenticatedSatislarRoute
+  '/stok': typeof AuthenticatedStokRoute
+  '/tedarikciler': typeof AuthenticatedTedarikcilerRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/auth': typeof AuthRoute
+  '/musteriler': typeof AuthenticatedMusterilerRoute
+  '/panel': typeof AuthenticatedPanelRoute
+  '/raporlar': typeof AuthenticatedRaporlarRoute
+  '/satislar': typeof AuthenticatedSatislarRoute
+  '/stok': typeof AuthenticatedStokRoute
+  '/tedarikciler': typeof AuthenticatedTedarikcilerRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
+  '/auth': typeof AuthRoute
+  '/_authenticated/musteriler': typeof AuthenticatedMusterilerRoute
+  '/_authenticated/panel': typeof AuthenticatedPanelRoute
+  '/_authenticated/raporlar': typeof AuthenticatedRaporlarRoute
+  '/_authenticated/satislar': typeof AuthenticatedSatislarRoute
+  '/_authenticated/stok': typeof AuthenticatedStokRoute
+  '/_authenticated/tedarikciler': typeof AuthenticatedTedarikcilerRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/auth'
+    | '/musteriler'
+    | '/panel'
+    | '/raporlar'
+    | '/satislar'
+    | '/stok'
+    | '/tedarikciler'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/auth'
+    | '/musteriler'
+    | '/panel'
+    | '/raporlar'
+    | '/satislar'
+    | '/stok'
+    | '/tedarikciler'
+  id:
+    | '__root__'
+    | '/'
+    | '/_authenticated'
+    | '/auth'
+    | '/_authenticated/musteriler'
+    | '/_authenticated/panel'
+    | '/_authenticated/raporlar'
+    | '/_authenticated/satislar'
+    | '/_authenticated/stok'
+    | '/_authenticated/tedarikciler'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
+  AuthRoute: typeof AuthRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated': {
+      id: '/_authenticated'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AuthenticatedRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -48,22 +160,77 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/tedarikciler': {
+      id: '/_authenticated/tedarikciler'
+      path: '/tedarikciler'
+      fullPath: '/tedarikciler'
+      preLoaderRoute: typeof AuthenticatedTedarikcilerRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/stok': {
+      id: '/_authenticated/stok'
+      path: '/stok'
+      fullPath: '/stok'
+      preLoaderRoute: typeof AuthenticatedStokRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/satislar': {
+      id: '/_authenticated/satislar'
+      path: '/satislar'
+      fullPath: '/satislar'
+      preLoaderRoute: typeof AuthenticatedSatislarRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/raporlar': {
+      id: '/_authenticated/raporlar'
+      path: '/raporlar'
+      fullPath: '/raporlar'
+      preLoaderRoute: typeof AuthenticatedRaporlarRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/panel': {
+      id: '/_authenticated/panel'
+      path: '/panel'
+      fullPath: '/panel'
+      preLoaderRoute: typeof AuthenticatedPanelRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/musteriler': {
+      id: '/_authenticated/musteriler'
+      path: '/musteriler'
+      fullPath: '/musteriler'
+      preLoaderRoute: typeof AuthenticatedMusterilerRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
   }
 }
 
+interface AuthenticatedRouteRouteChildren {
+  AuthenticatedMusterilerRoute: typeof AuthenticatedMusterilerRoute
+  AuthenticatedPanelRoute: typeof AuthenticatedPanelRoute
+  AuthenticatedRaporlarRoute: typeof AuthenticatedRaporlarRoute
+  AuthenticatedSatislarRoute: typeof AuthenticatedSatislarRoute
+  AuthenticatedStokRoute: typeof AuthenticatedStokRoute
+  AuthenticatedTedarikcilerRoute: typeof AuthenticatedTedarikcilerRoute
+}
+
+const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedMusterilerRoute: AuthenticatedMusterilerRoute,
+  AuthenticatedPanelRoute: AuthenticatedPanelRoute,
+  AuthenticatedRaporlarRoute: AuthenticatedRaporlarRoute,
+  AuthenticatedSatislarRoute: AuthenticatedSatislarRoute,
+  AuthenticatedStokRoute: AuthenticatedStokRoute,
+  AuthenticatedTedarikcilerRoute: AuthenticatedTedarikcilerRoute,
+}
+
+const AuthenticatedRouteRouteWithChildren =
+  AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
+  AuthRoute: AuthRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
