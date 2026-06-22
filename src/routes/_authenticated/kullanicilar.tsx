@@ -115,11 +115,57 @@ function AdminUsersPage() {
   return (
     <AppShell title="Kullanıcı Yönetimi">
       <Card className="p-6">
-        <div className="mb-4">
-          <h3 className="font-semibold text-lg">Kayıtlı Kullanıcılar</h3>
-          <p className="text-sm text-muted-foreground">
-            Yeni kayıt olan kullanıcılar varsayılan olarak pasiftir. Rol atayın ve aktif edin.
-          </p>
+        <div className="mb-4 flex items-start justify-between gap-4">
+          <div>
+            <h3 className="font-semibold text-lg">Kayıtlı Kullanıcılar</h3>
+            <p className="text-sm text-muted-foreground">
+              Sisteme yalnızca yöneticinin oluşturduğu hesaplar erişebilir.
+            </p>
+          </div>
+          <Dialog open={createOpen} onOpenChange={setCreateOpen}>
+            <DialogTrigger asChild>
+              <Button><UserPlus className="size-4" /> Yeni Kullanıcı</Button>
+            </DialogTrigger>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Yeni Kullanıcı Oluştur</DialogTitle>
+              </DialogHeader>
+              <div className="space-y-3">
+                <div className="space-y-2">
+                  <Label>Ad Soyad</Label>
+                  <Input value={newUser.fullName} onChange={(e) => setNewUser({ ...newUser, fullName: e.target.value })} />
+                </div>
+                <div className="space-y-2">
+                  <Label>E-posta</Label>
+                  <Input type="email" value={newUser.email} onChange={(e) => setNewUser({ ...newUser, email: e.target.value })} />
+                </div>
+                <div className="space-y-2">
+                  <Label>Şifre</Label>
+                  <Input type="text" value={newUser.password} onChange={(e) => setNewUser({ ...newUser, password: e.target.value })} />
+                </div>
+                <div className="space-y-2">
+                  <Label>Rol</Label>
+                  <Select value={newUser.role} onValueChange={(v) => setNewUser({ ...newUser, role: v as never })}>
+                    <SelectTrigger><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="admin">Yönetici</SelectItem>
+                      <SelectItem value="kasiyer">Kasiyer</SelectItem>
+                      <SelectItem value="depocu">Depocu</SelectItem>
+                      <SelectItem value="staff">Personel</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+              <DialogFooter>
+                <Button
+                  onClick={() => createMut.mutate()}
+                  disabled={!newUser.email || !newUser.password || !newUser.fullName || createMut.isPending}
+                >
+                  {createMut.isPending ? "Oluşturuluyor..." : "Oluştur"}
+                </Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
         </div>
         {isLoading || isAdmin === null ? (
           <p className="text-sm text-muted-foreground">Yükleniyor...</p>
