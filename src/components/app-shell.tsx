@@ -90,7 +90,7 @@ export function AppShell({ title, children, action }: { title: string; children:
         </div>
 
         <nav className="flex-1 px-4 space-y-1">
-          {navItems.map((item) => {
+          {navItems.filter((i) => !i.adminOnly || isAdmin).map((item) => {
             const active = pathname === item.to || (item.to !== "/panel" && pathname.startsWith(item.to));
             const Icon = item.icon;
             return (
